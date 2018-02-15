@@ -24,7 +24,7 @@ class Prometheus(object):
             return {"days": int(self.date_range.replace("d", ""))}
 
         if "w" in self.date_range:
-            return {"days": int(self.date_range.replace("w", ""))*7}
+            return {"days": int(self.date_range.replace("w", "")) * 7}
 
     @property
     def start(self):
@@ -41,7 +41,7 @@ class Prometheus(object):
     def default_processor(self, results):
         def toMs(x):
             if len(x) == 2:
-                return [x[0]*1000, x[1]]
+                return [x[0] * 1000, x[1]]
             return x
 
         return list(map(toMs, results))
@@ -53,7 +53,7 @@ class Prometheus(object):
         url += "start={}".format(mktime(self.start.timetuple()))
         url += "&end={}".format(mktime(self.end.timetuple()))
         url += "&step={}".format(self.resolution)
-        result = requests.get(url)
+        result = requests.get(url, verify=False)
 
         if processor is None:
             result = result.json()['data']['result'][0]['values']
@@ -63,63 +63,93 @@ class Prometheus(object):
 
     def mem_max(self, interval=None):
         data = {"min": 0, "max": 1024}
-        query = "query=avg(container_memory_usage_bytes{%s})/1024/1024&" % self.query
+        query = "query=avg(container_memory_usage_bytes{pod_name=~\"%s.*\", container_name!=\"POD\"})/1024/1024&" % self.query
         data["avg"] = self.get_metrics(query)
 
-        query = "query=max(container_memory_usage_bytes{%s})/1024/1024&" % self.query
+        query = "query=max(container_memory_usage_bytes{pod_name=~\"%s.*\", container_name!=\"POD\"})/1024/1024&" % self.query
         data["max"] = self.get_metrics(query)
 
-        query = "query=min(container_memory_usage_bytes{%s})/1024/1024&" % self.query
+        query = "query=min(container_memory_usage_bytes{pod_name=~\"%s.*\", container_name!=\"POD\"})/1024/1024&" % self.query
         data["min"] = self.get_metrics(query)
         return {"data": data}
 
     def cpu_max(self, interval=None):
         data = {"min": 0, "max": 100}
-        query = "query=avg(sum(rate(container_cpu_usage_seconds_total{%s}[2m])) by (name)) * 100&" % self.query
+        query = "query=avg(sum(rate(container_cpu_usage_seconds_total{pod_name=~\"%s.*\", container_name!=\"POD\"}[2m])) by (name)) * 100&" % self.query
         data["avg"] = self.get_metrics(query)
 
-        query = "query=max(sum(rate(container_cpu_usage_seconds_total{%s}[2m])) by (name)) * 100&" % self.query
+        query = "query=max(sum(rate(container_cpu_usage_seconds_total{pod_name=~\"%s.*\", container_name!=\"POD\"}[2m])) by (name)) * 100&" % self.query
         data["max"] = self.get_metrics(query)
 
-        query = "query=min(sum(rate(container_cpu_usage_seconds_total{%s}[2m])) by (name)) * 100&" % self.query
+        query = "query=min(sum(rate(container_cpu_usage_seconds_total{pod_name=~\"%s.*\", container_name!=\"POD\"}[2m])) by (name)) * 100&" % self.query
         data["min"] = self.get_metrics(query)
         return {"data": data}
 
     def units(self, interval=None):
         data = {"min": 0, "max": 100}
-        query = "query=max(count(rate(container_memory_usage_bytes{%s}[2m])) by (slave))&" % self.query
+        query = "query=max(count(rate(container_memory_usage_bytes{pod_name=~\"%s.*\"}[2m])) by (slave))/2&" % self.query
         data["units"] = self.get_metrics(query)
         return {"data": data}
 
     def swap(self, interval=None):
         data = {"min": 0, "max": 1024}
-        query = "query=avg(container_memory_swap{%s})/1024/1024&" % self.query
+        query = "query=avg(container_memory_swap{pod_name=~\"%s.*\", container_name!=\"POD\"})/1024/1024&" % self.query
         data["avg"] = self.get_metrics(query)
 
-        query = "query=max(container_memory_swap{%s})/1024/1024&" % self.query
+        query = "query=max(container_memory_swap{pod_name=~\"%s.*\", container_name!=\"POD\"})/1024/1024&" % self.query
         data["max"] = self.get_metrics(query)
 
-        query = "query=min(container_memory_swap{%s})/1024/1024&" % self.query
+        query = "query=min(container_memory_swap{pod_name=~\"%s.*\", container_name!=\"POD\"})/1024/1024&" % self.query
         data["min"] = self.get_metrics(query)
         return {"data": data}
 
     def netrx(self, interval=None):
         data = {"min": 0, "max": 100}
-        query = "query=rate(container_network_receive_bytes_total{%s}[2m])/1024&" % self.query
+        query = "query=rate(container_network_receive_bytes_total{pod_name=~\"%s.*\"}[2m])/1024&" % self.query
         data["netrx"] = self.get_metrics(query)
         return {"data": data}
 
     def nettx(self, interval=None):
         data = {"min": 0, "max": 100}
-        query = "query=rate(container_network_transmit_bytes_total{%s}[2m])/1024&" % self.query
+        query = "query=rate(container_network_transmit_bytes_total{pod_name=~\"%s.*\"}[2m])/1024&" % self.query
         data["nettx"] = self.get_metrics(query)
+        return {"data": data}
+
+    def requests_min(self, interval=None):
+        data = {}
+        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="total"}[2m])/2&' % self.query
+        data['requests'] = self.get_metrics(query)
+        return {'data': data}
+
+    def response_time(self, interval=None):
+        data = {}
+        query = 'query=nginx_upstream_responseMsec{upstream=~\".*%s.*\"}/1000&' % self.query
+        data['response'] = self.get_metrics(query)
+        return {'data': data}
+
+    def status_code(self, interval=None):
+        data = {}
+        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="1xx"}[2m])/2&' % self.query
+        data["1xx"] = self.get_metrics(query)
+
+        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="2xx"}[2m])/2&' % self.query
+        data["2xx"] = self.get_metrics(query)
+
+        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="3xx"}[2m])/2&' % self.query
+        data["3xx"] = self.get_metrics(query)
+
+        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="4xx"}[2m])/2&' % self.query
+        data["4xx"] = self.get_metrics(query)
+
+        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="5xx"}[2m])/2&' % self.query
+        data["5xx"] = self.get_metrics(query)
         return {"data": data}
 
     def connections(self, interval=None):
         data = {"min": 0, "max": 100}
-        query = 'query=sum(container_connections{%s,state="ESTABLISHED",protocol="tcp"}) by (destination)&' % self.query
-        data['data'] = self.get_metrics(query, processor=self.connections_processor)
-        return data
+        query = 'query=count(container_network_tcp_usage_total{pod_name=~\"%s.*\",tcp_state="established"}) by (destination)&' % self.query
+        data['connections'] = self.get_metrics(query)  # , processor=self.connections_processor)
+        return {'data': data}
 
     def connections_processor(self, result):
         results = result.json()['data']['result']
@@ -131,9 +161,10 @@ class Prometheus(object):
 
 class AppBackend(Prometheus):
     def __init__(self, app, url, process_name=None, date_range=None):
-        query = 'container_label_app_name="%s"' % app["name"]
+        query = '%s' % app["name"]
         if process_name is not None:
-            query += ',container_label_app_process="%s"' % process_name
+            query += '-%s' % process_name
+
         return super(AppBackend, self).__init__(
             url=url,
             query=query,
