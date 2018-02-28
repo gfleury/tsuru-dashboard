@@ -13,6 +13,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "Django>=1.10.6,<2.0",
+        "whitenoise>=2.0.6",
         "requests<2.12.0,>=2.11.0",
         "python-dateutil>=2.4.2",
         "pytz>=2015.4",
@@ -22,5 +23,6 @@ setup(
         "Pygments>=2.1.3",
         "pymongo>=3.3.0",
         "PyYAML>=3.11",
+        "django-bootstrap3",
     ],
 )

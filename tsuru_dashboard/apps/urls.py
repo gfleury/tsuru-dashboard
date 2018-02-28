@@ -32,4 +32,5 @@ urlpatterns = [
     ),
     url(r'^(?P<app_name>[\w-]+)/events/(?P<uuid>[\s\w@\.-]+)/$',
         views.EventInfo.as_view(), name='app-event'),
+    url(r'^(?P<app_name>[\w-]+)/autoscale/$',  views.Autoscale.as_view(), name='autoscale-app-info'),
 ]

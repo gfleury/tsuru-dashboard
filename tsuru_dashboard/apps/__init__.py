@@ -1,5 +1,5 @@
 from tsuru_dashboard import engine
-
+import tsuru_dashboard.autoscale
 
 class ResourcesTab(engine.Tab):
     name = 'resources'
@@ -26,11 +26,16 @@ class SettingsTab(engine.Tab):
     url_name = 'app-settings'
 
 
+class AutoScaleTab(engine.Tab):
+    name = 'autoscale'
+    url_name = 'autoscale-app-info'
+
+
 class App(engine.App):
     name = 'app'
 
     def __init__(self):
-        self.tabs = [ResourcesTab, DeploysTab, EventsTab, LogTab, SettingsTab]
+        self.tabs = [ResourcesTab, DeploysTab, EventsTab, LogTab, SettingsTab, AutoScaleTab]
 
 
 engine.register(App)

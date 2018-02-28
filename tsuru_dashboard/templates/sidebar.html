@@ -47,6 +47,11 @@
 				<span>Events</span>
 			</a>
 		</li>
+		<li{% if active == "autoscale" %} class="active"{% endif %}>
+			<a href="{% url 'autoscale-instance-list' %}">
+				<span>Autoscale</span>
+			</a>
+		</li>
 	</ul>
 </div> <!-- /row -->
 </div> <!-- /container-fluid -->

@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^metrics/', include('tsuru_dashboard.metrics.urls')),
     url(r'^components/', include('tsuru_dashboard.components.urls')),
     url(r'^events/', include('tsuru_dashboard.events.urls')),
+    url(r'^autoscale/', include('tsuru_dashboard.autoscale.urls')),
 ]

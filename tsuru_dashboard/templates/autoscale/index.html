@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "sidebar.html" with active="services" %}
+{% endblock %}
+
+{% block header %}
+<h1>Autoscale</h1>
+{% endblock %}
+
+{% block bar %}
+<div class="bar">
+  <a href="/">dashboard</a> <span class="arrow">></span>
+  services
+</div>
+{% endblock %}
+
+{% block content %}
+{% block content %}
+<ul>
+	<li><a href="{% url 'datasource-list' %}?TSURU_TOKEN={{ request.token }}">data sources</a></li>
+	<li><a href="{% url 'alarm-list' %}?TSURU_TOKEN={{ request.token }}">alarms</a></li>
+	<li><a href="{% url 'action-list' %}?TSURU_TOKEN={{ request.token }}">actions</a></li>
+</ul>
+{% endblock %}

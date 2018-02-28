@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "sidebar.html" with active="autoscale" %}
+{% endblock %}
+
+{% block header %}
+<h1>Autoscale</h1>
+{% endblock %}
+
+{% block bar %}
+<div class="bar">
+  <a href="/">dashboard</a> <span class="arrow">></span>
+  autoscale
+</div>
+{% endblock %}
+
+{% block content %}
+    {% include "autoscale/add.html" %}
+{% endblock %}

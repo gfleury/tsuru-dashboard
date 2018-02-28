@@ -562,3 +562,42 @@ class EventInfo(AppMixin, TemplateView):
         context = super(EventInfo, self).get_context_data(*args, **kwargs)
         context['event'] = self.get_event(kwargs["uuid"])
         return context
+
+
+from tsuru_dashboard.autoscale.instance import client
+from tsuru_dashboard.autoscale.wizard import client as wclient
+
+import urllib
+
+class Autoscale(AppMixin, TemplateView):
+    template_name = 'apps/autoscale.html'
+
+    def get(self, request, *args, **kwargs):
+        token = request.session.get('tsuru_token').split(" ")[-1]
+        instances = client.list(token).json() or []
+
+        app_name = kwargs['app_name']
+
+        instance = None
+        auto_scale = None
+        events = None
+
+        for inst in instances:
+            if app_name in inst.get('Apps', []):
+                instance = inst
+
+                response = wclient.get(instance["Name"], token)
+                if response.status_code == 200:
+                    auto_scale = response.json()
+                    events = wclient.events(instance["Name"], token).json()
+        context = {
+            "instance": instance,
+            "auto_scale": auto_scale,
+            "token": urllib.quote(token),
+            "app": self.get_app(app_name),
+            "app_name": app_name,
+            "events": events,
+            "tabs": engine.get('app').tabs,
+        }
+
+        return TemplateResponse(request, self.template_name, context=context)
