@@ -16,5 +16,10 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    {% block navbar %}
+    {% include "autoscale/navbar.html" with active="datasource" %}
+    {% endblock %}
+</div>
     {% include "autoscale/add.html" %}
 {% endblock %}

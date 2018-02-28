@@ -17,7 +17,7 @@ def new(request):
         return redirect(url)
 
     context = {"form": form}
-    return render(request, "action/new.html", context)
+    return render(request, "autoscale/action/new.html", context)
 
 
 def list(request):
@@ -26,7 +26,7 @@ def list(request):
     context = {
         "list": actions,
     }
-    return render(request, "action/list.html", context)
+    return render(request, "autoscale/action/list.html", context)
 
 
 def get(request, name):
@@ -35,7 +35,7 @@ def get(request, name):
     context = {
         "item": action,
     }
-    return render(request, "action/get.html", context)
+    return render(request, "autoscale/action/get.html", context)
 
 
 def remove(request, name):

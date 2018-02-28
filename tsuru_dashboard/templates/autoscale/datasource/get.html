@@ -15,9 +15,12 @@
 </div>
 {% endblock %}
 
-{% block title %}Data source{% endblock %}
-
 {% block content %}
+<div class="container-fluid">
+    {% block navbar %}
+    {% include "autoscale/navbar.html" with active="datasource" %}
+    {% endblock %}
+</div>
 <p>name: {{ item.Name }}</p>
 <p>method: {{ item.Method }}</p>
 <p>url: {{ item.URL }}</p>

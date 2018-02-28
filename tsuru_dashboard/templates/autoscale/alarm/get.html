@@ -1,8 +1,26 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Alarm{% endblock %}
+{% block sidebar %}
+{% include "sidebar.html" with active="autoscale" %}
+{% endblock %}
+
+{% block header %}
+<h1>Autoscale</h1>
+{% endblock %}
+
+{% block bar %}
+<div class="bar">
+  <a href="/">dashboard</a> <span class="arrow">></span>
+  autoscale
+</div>
+{% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    {% block navbar %}
+    {% include "autoscale/navbar.html" with active="alarm" %}
+    {% endblock %}
+</div>
 <p>name: {{ item.name }}</p>
 <p>expression: {{ item.expression }}</p>
 <p>enabled: {{ item.enabled }}</p>

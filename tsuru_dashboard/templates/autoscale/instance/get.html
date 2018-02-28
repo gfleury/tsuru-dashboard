@@ -16,6 +16,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    {% block navbar %}
+    {% include "autoscale/navbar.html" with active="instance" %}
+    {% endblock %}
+</div>
 <div class="row-fluid">
     <div class="span12">
         <h3>Info</h3>

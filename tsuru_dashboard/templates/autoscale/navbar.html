@@ -1,0 +1,18 @@
+<div class="navbar navbar-default">
+  <div class="navbar-inner">
+    <ul class="nav navbar-nav">
+      <li{% if active == "instance" %} class="active"{% endif %}>
+        <a title="instance" href="{% url 'autoscale-instance-list' %}">Instances</a>
+      </li>
+      <li{% if active == "datasource" %} class="active"{% endif %}>
+        <a title="datasource" href="{% url 'datasource-list' %}">Datasources</a>
+      </li>
+      <li{% if active == "alarm" %} class="active"{% endif %}>
+        <a title="alarm" href="{% url 'alarm-list' %}">Alarms</a>
+      </li>
+      <li{% if active == "action" %} class="active"{% endif %}>
+        <a title="action" href="{% url 'action-list' %}">Actions</a>
+      </li>
+    </ul>
+  </div>
+</div>
