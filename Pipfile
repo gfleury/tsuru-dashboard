@@ -22,6 +22,7 @@ gunicorn = "*"
 gevent = "*"
 raven = "==4.2.3"
 whitenoise = "==3.2.1"
+django-bootstrap3 = "==9.1.0"
 
 
 [requires]
