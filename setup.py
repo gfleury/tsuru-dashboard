@@ -23,6 +23,6 @@ setup(
         "Pygments>=2.1.3",
         "pymongo>=3.3.0",
         "PyYAML>=3.11",
-        "django-bootstrap3",
+        "django-bootstrap3==9.1.0",
     ],
 )
