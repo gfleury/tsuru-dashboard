@@ -32,7 +32,7 @@
 </div>
 {% if not alarms %}
 <p>
-    <a href="{% url 'wizard-new' item.Name %}?TSURU_TOKEN={{ request.token }}">
+    <a href="{% url 'wizard-new' item.Name %}">
         add new scale
     </a>
 </p>

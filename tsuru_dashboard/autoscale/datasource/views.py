@@ -10,13 +10,13 @@ def new(request):
     form = DataSourceForm(request.POST or None)
 
     if form.is_valid():
-        token = request.GET.get("TSURU_TOKEN")
+        token = request.session.get("tsuru_token").split(" ")[-1]
         response = client.new(form.cleaned_data, token)
         if response.status_code > 399:
             messages.error(request, response.text)
         else:
             messages.success(request, u"Data source saved.")
-        url = "{}?TSURU_TOKEN={}".format(reverse('datasource-list'), token)
+        url = "{}".format(reverse('datasource-list'))
         return redirect(url)
 
     context = {"form": form}
@@ -24,7 +24,7 @@ def new(request):
 
 
 def list(request):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     datasources = client.list(token).json()
     context = {
         "list": datasources,
@@ -33,15 +33,15 @@ def list(request):
 
 
 def remove(request, name):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     client.remove(name, token)
     messages.success(request, u"Data source  {} remove.".format(name))
-    url = "{}?TSURU_TOKEN={}".format(reverse('datasource-list'), token)
+    url = "{}".format(reverse('datasource-list'))
     return redirect(url)
 
 
 def get(request, name):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     datasource = client.get(name, token).json()
     context = {
         "item": datasource,

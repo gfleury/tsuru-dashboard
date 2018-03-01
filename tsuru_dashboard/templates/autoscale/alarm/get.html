@@ -29,5 +29,5 @@
 <p>data source: {{ item.datasource }}</p>
 <p>instance: {{ item.instance }}</p>
 <p>envs: {{ item.envs }}</p>
-<a href="{% url 'alarm-remove' item.name %}?TSURU_TOKEN={{ request.token }}">remove</a>
+<a href="{% url 'alarm-remove' item.name %}">remove</a>
 {% endblock %}

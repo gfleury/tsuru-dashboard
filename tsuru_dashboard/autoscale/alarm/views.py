@@ -7,7 +7,7 @@ from tsuru_dashboard.autoscale.alarm import client
 
 
 def new(request):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
 
     form = AlarmForm(request.POST or None)
     form.fields['datasource'].choices = datasource_list(token)
@@ -17,34 +17,34 @@ def new(request):
     if form.is_valid():
         client.new(form.cleaned_data, token)
         messages.success(request, u"Alarm saved.")
-        url = "{}?TSURU_TOKEN={}".format(reverse("alarm-list"), token)
+        url = "{}".format(reverse("alarm-list"))
         return redirect(url)
 
     context = {"form": form}
-    return render(request, "alarm/new.html", context)
+    return render(request, "autoscale/alarm/new.html", context)
 
 
 def list(request):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     alarms = client.list(token).json()
     context = {
         "list": alarms,
     }
-    return render(request, "alarm/list.html", context)
+    return render(request, "autoscale/alarm/list.html", context)
 
 
 def remove(request, name):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     client.remove(name, token)
     messages.success(request, u"Alarm {} removed.".format(name))
-    url = "{}?TSURU_TOKEN={}".format(reverse('alarm-list'), token)
+    url = "{}".format(reverse('alarm-list'))
     return redirect(url)
 
 
 def get(request, name):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     alarm = client.get(name, token).json()
     context = {
         "item": alarm,
     }
-    return render(request, "alarm/get.html", context)
+    return render(request, "autoscale/alarm/get.html", context)

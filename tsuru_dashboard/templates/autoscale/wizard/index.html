@@ -18,7 +18,7 @@
 {% block title %}Creating auto scale{% endblock %}
 
 {% block content %}
-<form method="POST" action="?TSURU_TOKEN={{ token }}" class="form-horizontal">
+<form method="POST" class="form-horizontal">
     {% csrf_token %}
     <fieldset>
         {{ config_form.as_p }}

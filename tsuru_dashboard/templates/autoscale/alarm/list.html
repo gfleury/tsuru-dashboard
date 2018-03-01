@@ -22,11 +22,11 @@
     {% endblock %}
 </div>
     <p>
-    <a href="{% url 'alarm-new' %}?TSURU_TOKEN={{ request.token }}">new</a>
+    <a href="{% url 'alarm-new' %}">new</a>
     </p>
     <ul>
       {% for item in list %}
-      <li>{{ item.name }} - {{ item.expression }} <a href="{% url 'alarm-get' item.name %}?TSURU_TOKEN={{ request.token }}">view details</a> <a href="{% url 'event-list' item.name %}">events</a></li>
+      <li>{{ item.name }} - {{ item.expression }} <a href="{% url 'alarm-get' item.name %}">view details</a> <a href="{% url 'event-list' item.name %}">events</a></li>
       {% endfor %}
     </ul>
 {% endblock %}

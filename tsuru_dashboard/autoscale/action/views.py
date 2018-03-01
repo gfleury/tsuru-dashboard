@@ -10,10 +10,10 @@ def new(request):
     form = ActionForm(request.POST or None)
 
     if form.is_valid():
-        token = request.GET.get("TSURU_TOKEN")
+        token = request.session.get("tsuru_token").split(" ")[-1]
         client.new(form.cleaned_data, token)
         messages.success(request, u"Action saved.")
-        url = "{}?TSURU_TOKEN={}".format(reverse('action-list'), token)
+        url = "{}".format(reverse('action-list'))
         return redirect(url)
 
     context = {"form": form}
@@ -21,7 +21,7 @@ def new(request):
 
 
 def list(request):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     actions = client.list(token).json()
     context = {
         "list": actions,
@@ -30,7 +30,7 @@ def list(request):
 
 
 def get(request, name):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     action = client.get(name, token).json()
     context = {
         "item": action,
@@ -39,8 +39,8 @@ def get(request, name):
 
 
 def remove(request, name):
-    token = request.GET.get("TSURU_TOKEN")
+    token = request.session.get("tsuru_token").split(" ")[-1]
     client.remove(name, token)
     messages.success(request, u"Action {} removed.".format(name))
-    url = "{}?TSURU_TOKEN={}".format(reverse('action-list'), token)
+    url = "{}".format(reverse('action-list'))
     return redirect(url)

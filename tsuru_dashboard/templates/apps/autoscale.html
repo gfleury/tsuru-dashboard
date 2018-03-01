@@ -46,13 +46,13 @@
   </tbody>
 </table>
 {% endif %}
-<a href="{% url 'wizard-remove' instance.Name %}?TSURU_TOKEN={{ token }}">remove auto scale</a>
+<a href="{% url 'wizard-remove' instance.Name %}">remove auto scale</a>
 {% if auto_scale.enabled %}
-<a href="{% url 'wizard-disable' instance.Name %}?TSURU_TOKEN={{ token }}">disable auto scale</a>
+<a href="{% url 'wizard-disable' instance.Name %}">disable auto scale</a>
 {% else %}
-<a href="{% url 'wizard-enable' instance.Name %}?TSURU_TOKEN={{ token }}">enable auto scale</a>
+<a href="{% url 'wizard-enable' instance.Name %}">enable auto scale</a>
 {% endif %}
 {% else %}
-<a href="{% url 'wizard-new' app_name %}?TSURU_TOKEN={{ token }}" class="btn btn-default">add auto scale</a>
+<a href="{% url 'wizard-new' app_name %}" class="btn btn-default">add auto scale</a>
 {% endif %}
 {% endblock %}
