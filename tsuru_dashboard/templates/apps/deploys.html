@@ -22,7 +22,7 @@
     <table class="deploys table" id="list">
       {% for deploy in deploys %}
       <tr class="{% if deploy.Error %}bg-danger{% endif %}">
-        <td>
+        <td width="40%">
           {{ deploy.Timestamp|string_to_date|date:" d-m-Y H:i:s " }}
           - deployed from: {{ deploy.Origin }}
           <br>
@@ -33,6 +33,9 @@
           <a class="rollback" href="#rollback"
           data-toggle="modal" rollback-url="{% url 'app-rollback' app.name deploy.Image %}">roll back to here</a>
           {% endif %}
+        </td>
+        <td width="60%">
+          {{ deploy.Message|linebreaks|urlize }}
         </td>
       </tr>
       {% empty %}
