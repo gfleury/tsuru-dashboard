@@ -117,31 +117,31 @@ class Prometheus(object):
 
     def requests_min(self, interval=None):
         data = {}
-        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="total"}[2m])/2&' % self.query
+        query = 'query=increase(nginx_upstream_requests_total{upstream=~\".*%s.*\", code="total"}[2m])/2&' % self.query
         data['requests'] = self.get_metrics(query)
         return {'data': data}
 
     def response_time(self, interval=None):
         data = {}
-        query = 'query=nginx_upstream_responseMsec{upstream=~\".*%s.*\"}/1000&' % self.query
+        query = 'query=nginx_upstream_response_msecs_avg{upstream=~\".*%s.*\"}/1000&' % self.query
         data['response'] = self.get_metrics(query)
         return {'data': data}
 
     def status_code(self, interval=None):
         data = {}
-        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="1xx"}[2m])/2&' % self.query
+        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="1xx"}[2m])/2&' % self.query
         data["1xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="2xx"}[2m])/2&' % self.query
+        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="2xx"}[2m])/2&' % self.query
         data["2xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="3xx"}[2m])/2&' % self.query
+        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="3xx"}[2m])/2&' % self.query
         data["3xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="4xx"}[2m])/2&' % self.query
+        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="4xx"}[2m])/2&' % self.query
         data["4xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_requests{upstream=~\".*%s.*\", code="5xx"}[2m])/2&' % self.query
+        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="5xx"}[2m])/2&' % self.query
         data["5xx"] = self.get_metrics(query)
         return {"data": data}
 
