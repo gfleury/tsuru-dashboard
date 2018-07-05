@@ -117,7 +117,7 @@ class Prometheus(object):
 
     def requests_min(self, interval=None):
         data = {}
-        query = 'query=increase(nginx_upstream_requests_total{upstream=~\".*%s.*\", code="total"}[2m])/2&' % self.query
+        query = 'query=increase(nginx_upstream_requests_total{upstream=~\".*%s.*\"}[2m])/2&' % self.query
         data['requests'] = self.get_metrics(query)
         return {'data': data}
 
