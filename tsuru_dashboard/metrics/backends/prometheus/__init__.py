@@ -56,7 +56,11 @@ class Prometheus(object):
         result = requests.get(url, verify=False)
 
         if processor is None:
-            result = result.json()['data']['result'][0]['values']
+            result = result.json()['data']['result']
+            if len(result) > 0:
+                result = result[0]['values']
+            else:
+                result = {}
             processor = self.default_processor
 
         return processor(result)
@@ -117,31 +121,48 @@ class Prometheus(object):
 
     def requests_min(self, interval=None):
         data = {}
-        query = 'query=increase(nginx_upstream_requests_total{upstream=~\".*%s.*\"}[2m])/2&' % self.query
+        query = 'query=sum(increase(nginx_ingress_controller_requests{ingress=~\".*%s.*\"}[2m])/2)&' % self.query
         data['requests'] = self.get_metrics(query)
         return {'data': data}
 
     def response_time(self, interval=None):
         data = {}
-        query = 'query=nginx_upstream_response_msecs_avg{upstream=~\".*%s.*\"}/1000&' % self.query
+        query = 'query=sum(nginx_ingress_controller_response_duration_seconds_sum{ingress=~\".*%s.*\"})/sum(nginx_ingress_controller_response_duration_seconds_count{ingress=~\".*%s.*\"})&' % (self.query, self.query)
         data['response'] = self.get_metrics(query)
         return {'data': data}
 
+
+    def http_methods(self, interval=None):
+        data = {}
+        query = 'query=sum(nginx_ingress_controller_request_size_count{method="GET", ingress=~\".*%s.*\"})&' % self.query
+        data['GET'] = self.get_metrics(query)
+        query = 'query=sum(nginx_ingress_controller_request_size_count{method="POST", ingress=~\".*%s.*\"})&' % self.query
+        data['POST'] = self.get_metrics(query)
+        query = 'query=sum(nginx_ingress_controller_request_size_count{method="DELETE", ingress=~\".*%s.*\"})&' % self.query
+        data['DELETE'] = self.get_metrics(query)
+        query = 'query=sum(nginx_ingress_controller_request_size_count{method="PUT", ingress=~\".*%s.*\"})&' % self.query
+        data['PUT'] = self.get_metrics(query)
+        query = 'query=sum(nginx_ingress_controller_request_size_count{method="HEAD", ingress=~\".*%s.*\"})&' % self.query
+        data['HEAD'] = self.get_metrics(query)
+
+        return {'data': data}
+
+
     def status_code(self, interval=None):
         data = {}
-        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="1xx"}[2m])/2&' % self.query
+        query = 'query=sum(increase(nginx_ingress_controller_requests{ingress=~\".*%s.*\", status=~\"1.*\"}[2m])/2)&' % self.query
         data["1xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="2xx"}[2m])/2&' % self.query
+        query = 'query=sum(increase(nginx_ingress_controller_requests{ingress=~\".*%s.*\", status=~\"2.*\"}[2m])/2)&' % self.query
         data["2xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="3xx"}[2m])/2&' % self.query
+        query = 'query=sum(increase(nginx_ingress_controller_requests{ingress=~\".*%s.*\", status=~\"3.*\"}[2m])/2)&' % self.query
         data["3xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="4xx"}[2m])/2&' % self.query
+        query = 'query=sum(increase(nginx_ingress_controller_requests{ingress=~\".*%s.*\", status=~\"4.*\"}[2m])/2)&' % self.query
         data["4xx"] = self.get_metrics(query)
 
-        query = 'query=increase(nginx_upstream_responses_total{upstream=~\".*%s.*\", status_code="5xx"}[2m])/2&' % self.query
+        query = 'query=sum(increase(nginx_ingress_controller_requests{ingress=~\".*%s.*\", status=~\"5.*\"}[2m])/2)&' % self.query
         data["5xx"] = self.get_metrics(query)
         return {"data": data}
 
@@ -162,8 +183,8 @@ class Prometheus(object):
 class AppBackend(Prometheus):
     def __init__(self, app, url, process_name=None, date_range=None):
         query = '%s' % app["name"]
-        if process_name is not None:
-            query += '-%s' % process_name
+        # if process_name is not None:
+        #     query += '-%s' % process_name
 
         return super(AppBackend, self).__init__(
             url=url,
